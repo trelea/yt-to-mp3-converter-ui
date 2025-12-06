@@ -47,4 +47,4 @@ EXPOSE 5174
 
 # Use dumb-init for proper signal handling and start the preview server
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["yarn", "preview", "--host", "0.0.0.0", "--port", "5174"]
+CMD ["yarn", "run", "preview"]
