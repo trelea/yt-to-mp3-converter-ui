@@ -114,7 +114,12 @@ export default function Register() {
                   )}
                 />
 
-                <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  size="lg"
+                  disabled={isLoading}
+                >
                   {isLoading ? (
                     <>
                       <Loader2 className="size-4 animate-spin" />
