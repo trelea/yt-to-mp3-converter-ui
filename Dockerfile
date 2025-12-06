@@ -10,11 +10,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 COPY yarn.lock* ./
 
-# Dependencies stage - production only
-FROM base AS deps
-RUN yarn install --frozen-lockfile --production && yarn cache clean
-
-# Build stage - all dependencies needed for build
+# Build stage
 FROM base AS build
 RUN yarn install --frozen-lockfile
 COPY . .
@@ -33,15 +29,15 @@ RUN addgroup -g 1001 -S nodejs && \
 # Set working directory
 WORKDIR /usr/src/app
 
-# Copy production dependencies with proper ownership
-COPY --from=deps --chown=vite:nodejs /usr/src/app/node_modules ./node_modules
+# Copy all dependencies (vite preview needs dev deps to load config)
+COPY --from=build --chown=vite:nodejs /usr/src/app/node_modules ./node_modules
 
 # Copy built application with proper ownership
 COPY --from=build --chown=vite:nodejs /usr/src/app/dist ./dist
 
 # Copy package.json and vite config for preview server
-COPY --chown=vite:nodejs package*.json ./
-COPY --chown=vite:nodejs vite.config.* ./
+COPY --from=build --chown=vite:nodejs /usr/src/app/package*.json ./
+COPY --from=build --chown=vite:nodejs /usr/src/app/vite.config.* ./
 
 # Switch to non-root user
 USER vite
